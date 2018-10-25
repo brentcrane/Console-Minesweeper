@@ -1,5 +1,6 @@
 import random
 
+# Seed the random number generator
 random.seed()
 
 board = []
@@ -7,14 +8,15 @@ board_debug = []
 mine_count = 0
 
 
+# Initialize and print the game board
 def game_init():
     setup_board()
     print_board(["print"])
 
 
+# Determine which command is being called
 def parse_command(command):
     command_list = command.split()
-
     if command_list[0] == "print":
         print_board(command_list)
     elif command_list[0] == "fire":
@@ -27,6 +29,7 @@ def parse_command(command):
         print("Invalid command")
 
 
+# Print the board, either in normal or debug mode
 def print_board(command):
     if len(command) > 1 and command[1] == "debug":
         print("   A B C D E F G H I J")
@@ -50,6 +53,7 @@ def print_board(command):
             counter += 1
 
 
+# End the game
 def end_game():
     print("Game over. Thanks for playing!")
     exit(0)
@@ -69,10 +73,12 @@ def fire(command):
         print("Error: fire command takes 2 coordinates.")
 
 
+# Flag a space as a possible mine-spot
 def flag(command):
     if len(command) < 3:
         print("Error: flag command takes 2 coordinates.")
     elif command[2].isnumeric():
+        # Converts the A-J value to a numeric value
         column = ord(command[1])-65
         if 0 <= column <= 9:
             board[int(command[2])][int(column)] = "X"
@@ -83,6 +89,7 @@ def flag(command):
     print_board(["print"])
 
 
+# Fire at a specific spot on the board
 def fire_at_grid(y, x):
     y = int(y)
     x = int(x)
@@ -100,7 +107,10 @@ def fire_at_grid(y, x):
         print_board(["print"])
 
 
+# Recursive algorithm that opens up any adjacent empty spaces, and
+# displays the numbers around the perimeter of the open space
 def flood_fill(x, y):
+    # If the spot is a zero, check its neighbors
     if board_debug[x][y] == "0":
         board[x][y] = "0"
         # Adjacent tiles
@@ -121,22 +131,26 @@ def flood_fill(x, y):
             flood_fill(x+1, y-1)
         if x+1 <= 9 and y+1 <= 9 and (board[x+1][y+1] == "." or board[x+1][y+1] == "X"):
             flood_fill(x+1, y+1)
+    # If the spot is not a zero, display its number value
     else:
         board[x][y] = board_debug[x][y]
 
 
+# Create both the normal and the debug board
 def setup_board():
     global mine_count
+    # Create the debug board (debug board is a bad name)
     for i in range(10):
         board.append([])
         board_debug.append([])
         for j in range(10):
             board[i].append(".")
-            if random.randint(0, 100) < 5:
+            if random.randint(0, 100) < 25:
                 mine_count += 1
                 board_debug[i].append("M")
             else:
                 board_debug[i].append(".")
+    # Create the playing board, and count how many mines were generated
     for x in range(0, 10):
         for y in range(0, 10):
             counter = 0
