@@ -9,6 +9,7 @@ mine_count = 0
 
 def game_init():
     setup_board()
+    print_board(["print"])
 
 
 def parse_command(command):
