@@ -3,6 +3,9 @@ import random
 # Seed the random number generator
 random.seed()
 
+# Chance to spawn a mine (/100)
+mine_chance = 5
+
 board = []
 board_debug = []
 mine_count = 0
@@ -25,6 +28,8 @@ def parse_command(command):
         end_game()
     elif command_list[0] == "flag":
         flag(command_list)
+    elif command_list[0] == "check":
+        check_win()
     else:
         print("Invalid command")
 
@@ -89,6 +94,24 @@ def flag(command):
     print_board(["print"])
 
 
+def check_win():
+    flag_count = 0
+    total = 100
+    win = False
+    for x in board_debug:
+        for y in x:
+            if y == "X":
+                flag_count += 1
+                total -= 1
+            elif y == ".":
+                break
+            else:
+                total -= 1
+    if total == 0 and flag_count == mine_count:
+        win = True
+    print("Win:", win)
+
+
 # Fire at a specific spot on the board
 def fire_at_grid(y, x):
     y = int(y)
@@ -145,7 +168,7 @@ def setup_board():
         board_debug.append([])
         for j in range(10):
             board[i].append(".")
-            if random.randint(0, 100) < 25:
+            if random.randint(0, 100) < mine_chance:
                 mine_count += 1
                 board_debug[i].append("M")
             else:
